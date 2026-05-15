@@ -3,20 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TaskKart Workspace</title>
+    <title>Smart Water Monitor</title>
     <style>
         :root {
-            --nav: #111827;
-            --nav-soft: #1f2937;
-            --gold: #f7b84b;
-            --gold-dark: #d99216;
-            --teal: #0f766e;
-            --ink: #111827;
-            --muted: #657181;
-            --line: #d6dde7;
-            --panel: #ffffff;
-            --page: #e8edf3;
-            --danger: #b42318;
+            --bg-deep: #03131c;
+            --bg-mid: #0a2a38;
+            --panel: rgba(5, 25, 35, 0.78);
+            --panel-border: rgba(144, 214, 255, 0.18);
+            --text-main: #ecf8ff;
+            --text-soft: #95b8c7;
+            --accent: #5ce1e6;
+            --accent-strong: #12b8cb;
+            --shadow: 0 20px 60px rgba(0, 0, 0, 0.28);
+            --danger: #ff7b8f;
         }
 
         * { box-sizing: border-box; }
@@ -24,315 +23,212 @@
         body {
             margin: 0;
             min-height: 100vh;
-            color: var(--ink);
-            font-family: Arial, Helvetica, sans-serif;
-            background:
-                linear-gradient(180deg, rgba(17, 24, 39, 0.08), transparent 280px),
-                var(--page);
-        }
-
-        .topbar {
-            min-height: 68px;
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            padding: 12px clamp(16px, 4vw, 44px);
-            color: white;
-            background: var(--nav);
-        }
-
-        .brand {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-weight: 900;
-            font-size: 1.45rem;
-            white-space: nowrap;
-        }
-
-        .brand-mark {
-            width: 34px;
-            height: 34px;
             display: grid;
             place-items: center;
-            color: #111827;
-            background: var(--gold);
-            font-weight: 900;
+            padding: 24px;
+            color: var(--text-main);
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            background:
+                radial-gradient(circle at top left, rgba(92, 225, 230, 0.22), transparent 30%),
+                radial-gradient(circle at bottom right, rgba(18, 184, 203, 0.22), transparent 28%),
+                linear-gradient(135deg, var(--bg-deep), var(--bg-mid));
         }
 
-        .search-shell {
-            flex: 1;
+        .shell {
+            width: min(100%, 1020px);
             display: grid;
-            grid-template-columns: 150px 1fr 54px;
-            min-width: 260px;
-            border: 2px solid transparent;
+            grid-template-columns: 1.05fr 0.95fr;
+            overflow: hidden;
+            border: 1px solid var(--panel-border);
+            border-radius: 28px;
+            background: rgba(2, 11, 18, 0.72);
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(16px);
         }
 
-        .search-shell:focus-within { border-color: var(--gold); }
-        .search-shell select, .search-shell input, .search-shell button {
-            border: 0;
-            min-height: 44px;
-            font: inherit;
-        }
-        .search-shell select { padding: 0 12px; color: #2f3946; background: #f0f2f5; border-right: 1px solid #cbd3dd; }
-        .search-shell input { padding: 0 14px; outline: none; }
-        .search-shell button { background: var(--gold); color: #111827; font-weight: 900; cursor: pointer; }
-        .nav-note { color: #d9e1eb; font-size: 0.9rem; line-height: 1.25; }
+        .hero, .login-panel { padding: 40px; }
 
-        .subnav {
+        .hero {
+            background: linear-gradient(160deg, rgba(92, 225, 230, 0.08), rgba(2, 11, 18, 0.08));
             display: flex;
-            gap: 18px;
-            overflow-x: auto;
-            padding: 10px clamp(16px, 4vw, 44px);
-            color: #e5edf6;
-            background: var(--nav-soft);
+            flex-direction: column;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .eyebrow {
+            display: inline-flex;
+            width: fit-content;
+            padding: 8px 14px;
+            border-radius: 999px;
+            font-size: 12px;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            background: rgba(92, 225, 230, 0.14);
+            color: var(--accent);
+        }
+
+        h1 { margin: 0; font-size: clamp(2.2rem, 4vw, 4rem); line-height: 1.02; }
+        p { margin: 0; color: var(--text-soft); line-height: 1.6; }
+
+        .metrics {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 14px;
+            margin-top: 6px;
+        }
+
+        .metric {
+            padding: 16px;
+            border-radius: 18px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .metric strong { display: block; font-size: 1.3rem; margin-bottom: 4px; }
+        .login-panel { display: flex; align-items: center; background: var(--panel); }
+        .login-box { width: 100%; }
+        .login-box h2 { margin: 0 0 8px; font-size: 1.8rem; }
+        .login-box form { margin-top: 28px; display: grid; gap: 16px; }
+        label { font-size: 0.95rem; color: var(--text-soft); }
+
+        input {
+            width: 100%;
+            margin-top: 8px;
+            padding: 14px 16px;
+            border-radius: 14px;
+            border: 1px solid rgba(255, 255, 255, 0.09);
+            background: rgba(255, 255, 255, 0.03);
+            color: var(--text-main);
+            outline: none;
+        }
+
+        input:focus {
+            border-color: rgba(92, 225, 230, 0.7);
+            box-shadow: 0 0 0 4px rgba(92, 225, 230, 0.1);
+        }
+
+        button {
+            margin-top: 8px;
+            padding: 14px 18px;
+            border: none;
+            border-radius: 14px;
+            background: linear-gradient(135deg, var(--accent), var(--accent-strong));
+            color: #04202c;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .hint {
+            margin-top: 16px;
+            font-size: 0.9rem;
+            color: var(--text-soft);
+        }
+
+        .error {
+            min-height: 22px;
+            color: var(--danger);
             font-size: 0.92rem;
         }
 
-        .hero {
-            min-height: 430px;
-            display: grid;
-            grid-template-columns: minmax(0, 1.15fr) minmax(330px, 0.85fr);
-            gap: 28px;
-            align-items: center;
-            padding: clamp(28px, 5vw, 62px) clamp(16px, 5vw, 72px) 78px;
-            background:
-                linear-gradient(115deg, rgba(17, 24, 39, 0.92), rgba(15, 118, 110, 0.76)),
-                url("https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=1800&q=80") center/cover;
-            color: white;
-        }
-
-        .hero h1 {
-            max-width: 820px;
-            margin: 0;
-            font-size: clamp(2.6rem, 6vw, 5.5rem);
-            line-height: 0.95;
-            letter-spacing: 0;
-        }
-
-        .hero p {
-            max-width: 640px;
-            margin: 18px 0 0;
-            color: #dbe5ef;
-            line-height: 1.65;
-            font-size: 1.05rem;
-        }
-
-        .trust-row {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 12px;
-            margin-top: 28px;
-        }
-
-        .trust-pill {
-            padding: 10px 13px;
-            background: rgba(255, 255, 255, 0.12);
-            border: 1px solid rgba(255, 255, 255, 0.18);
-            font-weight: 800;
-            color: white;
-        }
-
-        .auth-card {
-            background: white;
-            color: var(--ink);
-            padding: 24px;
-            box-shadow: 0 22px 70px rgba(0, 0, 0, 0.28);
-        }
-
-        .auth-card h2 { margin: 0 0 8px; font-size: 1.45rem; }
-        .demo { color: var(--muted); font-size: 0.94rem; line-height: 1.5; }
-        .tabs { display: grid; grid-template-columns: 1fr 1fr; margin: 22px 0; border: 1px solid var(--line); }
-        .tab { min-height: 42px; border: 0; background: white; color: var(--muted); cursor: pointer; font-weight: 900; }
-        .tab.active { background: var(--nav); color: white; }
-        form { display: grid; gap: 14px; }
-        label { display: grid; gap: 7px; color: #4b5563; font-size: 0.92rem; font-weight: 700; }
-        input {
-            width: 100%;
-            min-height: 44px;
-            padding: 11px 12px;
-            border: 1px solid #bcc7d5;
-            color: var(--ink);
-            font: inherit;
-            outline: none;
-        }
-        input:focus { border-color: var(--gold-dark); box-shadow: 0 0 0 3px rgba(247, 184, 75, 0.22); }
-        .primary {
-            min-height: 44px;
-            border: 0;
-            background: linear-gradient(180deg, #ffd978, var(--gold));
-            color: #1f2937;
-            font-weight: 900;
-            cursor: pointer;
-        }
-        .primary:hover { background: linear-gradient(180deg, #ffd062, #eba72f); }
-        .message { min-height: 22px; color: var(--danger); font-size: 0.92rem; }
-        .hidden { display: none; }
-
-        .showcase {
-            max-width: 1180px;
-            margin: -48px auto 40px;
-            padding: 0 16px;
-            display: grid;
-            grid-template-columns: repeat(3, minmax(0, 1fr));
-            gap: 18px;
-            position: relative;
-        }
-
-        .showcase-card {
-            min-height: 190px;
-            padding: 20px;
-            background: white;
-            border: 1px solid var(--line);
-            box-shadow: 0 10px 35px rgba(37, 50, 65, 0.08);
-        }
-        .showcase-card h3 { margin: 0 0 10px; font-size: 1.15rem; }
-        .showcase-card p { color: var(--muted); line-height: 1.55; margin: 0; }
-        .mini-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-top: 18px; }
-        .mini-tile { min-height: 58px; display: grid; place-items: center; color: white; font-weight: 900; background: var(--teal); }
-        .mini-tile:nth-child(2) { background: #334155; }
-        .mini-tile:nth-child(3) { background: var(--gold-dark); }
-        .mini-tile:nth-child(4) { background: #7c3aed; }
-
-        @media (max-width: 920px) {
-            .topbar { align-items: stretch; flex-direction: column; }
-            .search-shell { grid-template-columns: 118px 1fr 48px; }
-            .hero { grid-template-columns: 1fr; padding-bottom: 86px; }
-            .showcase { grid-template-columns: 1fr; }
-        }
-
-        @media (max-width: 540px) {
-            .search-shell { grid-template-columns: 1fr 46px; }
-            .search-shell select { display: none; }
-            .hero { padding-left: 18px; padding-right: 18px; }
+        @media (max-width: 820px) {
+            .shell { grid-template-columns: 1fr; }
+            .hero, .login-panel { padding: 28px; }
+            .metrics { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
-<header class="topbar">
-    <div class="brand"><span class="brand-mark">TK</span>TaskKart</div>
-    <div class="search-shell" aria-label="Search preview">
-        <select aria-label="Workspace category">
-            <option>All teams</option>
-            <option>Projects</option>
-            <option>Tasks</option>
-        </select>
-        <input aria-label="Search" placeholder="Search projects, tasks, teammates">
-        <button type="button" aria-label="Search">Go</button>
-    </div>
-    <div class="nav-note">Delivery-grade collaboration<br>for modern teams</div>
-</header>
-
-<nav class="subnav" aria-label="Workspace sections">
-    <span>Today's deals</span>
-    <span>Project catalog</span>
-    <span>Task orders</span>
-    <span>Team members</span>
-    <span>Priority queue</span>
-    <span>Dashboard analytics</span>
-</nav>
-
-<main>
+<div class="shell">
     <section class="hero">
-        <div>
-            <h1>Ship teamwork like a premium marketplace.</h1>
-            <p>TaskKart turns projects into browsable catalogs, tasks into trackable orders, and team progress into a polished operations dashboard.</p>
-            <div class="trust-row">
-                <span class="trust-pill">Admin control</span>
-                <span class="trust-pill">Member updates</span>
-                <span class="trust-pill">Overdue tracking</span>
-                <span class="trust-pill">Railway ready</span>
+        <span class="eyebrow">Secure Infrastructure Monitoring</span>
+        <h1>IoT Water Monitoring System</h1>
+        <p>This platform helps monitor water level, pH balance, and temperature in real time through a connected IoT dashboard. It also provides intelligent insights, trend analysis, and alert-based decision support so operators can quickly understand water quality and system health.</p>
+        <div class="metrics">
+            <div class="metric">
+                <strong>Live Monitoring</strong>
+                <span>Watch important water parameters in one connected control panel.</span>
+            </div>
+            <div class="metric">
+                <strong>Smart Analysis</strong>
+                <span>View system trends, predictions, and condition-based recommendations.</span>
+            </div>
+            <div class="metric">
+                <strong>Secure Access</strong>
+                <span>Use authenticated access to open the dashboard and manage operations safely.</span>
             </div>
         </div>
-
-        <section class="auth-card">
-            <h2>Sign in to your workspace</h2>
-            <div class="demo">Demo admin: <strong>admin</strong> / <strong>admin123</strong>. New accounts can create a project and become its admin.</div>
-            <div class="tabs">
-                <button class="tab active" id="loginTab" onclick="setMode('login')">Login</button>
-                <button class="tab" id="signupTab" onclick="setMode('signup')">Signup</button>
-            </div>
-
-            <form id="loginForm" onsubmit="event.preventDefault(); login();">
-                <label>Email or username<input id="loginEmail" autocomplete="username" placeholder="admin or you@example.com"></label>
-                <label>Password<input id="loginPassword" type="password" autocomplete="current-password" placeholder="Your password"></label>
-                <div class="message" id="loginMessage"></div>
-                <button class="primary" type="submit">Continue securely</button>
-            </form>
-
-            <form id="signupForm" class="hidden" onsubmit="event.preventDefault(); signup();">
-                <label>Name<input id="signupName" autocomplete="name" placeholder="Your name"></label>
-                <label>Email<input id="signupEmail" autocomplete="email" placeholder="you@example.com"></label>
-                <label>Password<input id="signupPassword" type="password" autocomplete="new-password" placeholder="At least 6 characters"></label>
-                <div class="message" id="signupMessage"></div>
-                <button class="primary" type="submit">Create workspace account</button>
-            </form>
-        </section>
     </section>
 
-    <section class="showcase">
-        <article class="showcase-card">
-            <h3>Project catalog</h3>
-            <p>Each project behaves like a premium listing with clear ownership, team count, and delivery health.</p>
-            <div class="mini-grid"><div class="mini-tile">Admin</div><div class="mini-tile">Team</div><div class="mini-tile">Tasks</div><div class="mini-tile">Due</div></div>
-        </article>
-        <article class="showcase-card">
-            <h3>Task order flow</h3>
-            <p>Track every assignment from To Do to Done with priority, due date, assignee, and status controls.</p>
-            <div class="mini-grid"><div class="mini-tile">To Do</div><div class="mini-tile">Work</div><div class="mini-tile">Done</div><div class="mini-tile">Late</div></div>
-        </article>
-        <article class="showcase-card">
-            <h3>Role-aware operations</h3>
-            <p>Admins manage teams and tasks. Members focus on assigned task status updates with clean boundaries.</p>
-            <div class="mini-grid"><div class="mini-tile">RBAC</div><div class="mini-tile">JWT</div><div class="mini-tile">REST</div><div class="mini-tile">SQL</div></div>
-        </article>
+    <section class="login-panel">
+        <div class="login-box">
+            <h2>Secure Portal Login</h2>
+            <p>Sign in with a database-backed account to access the futuristic monitoring dashboard.</p>
+
+            <form onsubmit="event.preventDefault(); login();">
+                <label>
+                    Username
+                    <input type="text" id="user" placeholder="Enter username" autocomplete="username">
+                </label>
+
+                <label>
+                    Password
+                    <input type="password" id="pass" placeholder="Enter password" autocomplete="current-password">
+                </label>
+
+                <div class="error" id="errorText"></div>
+                <button type="submit">Open Secure Dashboard</button>
+            </form>
+
+            <div class="hint">Use your authorized account to enter the dashboard and monitor the IoT water system securely.</div>
+        </div>
     </section>
-</main>
+</div>
 
 <script>
-    function setMode(mode) {
-        document.getElementById("loginForm").classList.toggle("hidden", mode !== "login");
-        document.getElementById("signupForm").classList.toggle("hidden", mode !== "signup");
-        document.getElementById("loginTab").classList.toggle("active", mode === "login");
-        document.getElementById("signupTab").classList.toggle("active", mode === "signup");
-    }
+    const params = new URLSearchParams(window.location.search);
 
-    async function submitAuth(url, payload, messageId) {
-        const message = document.getElementById(messageId);
-        message.textContent = "";
-        const response = await fetch(url, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload)
-        });
-        if (!response.ok) {
-            const error = await response.json().catch(() => ({ message: "Authentication failed" }));
-            message.textContent = error.message || "Authentication failed";
+    async function login() {
+        const username = document.getElementById("user").value.trim();
+        const password = document.getElementById("pass").value.trim();
+        const errorText = document.getElementById("errorText");
+
+        errorText.innerText = "";
+
+        if (!username || !password) {
+            errorText.innerText = "Please enter both username and password.";
             return;
         }
+
+        const response = await fetch("/api/auth/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ username, password })
+        });
+
+        if (!response.ok) {
+            errorText.innerText = "Invalid username or password.";
+            return;
+        }
+
+        const user = await response.json();
+        localStorage.setItem("water_user", JSON.stringify(user));
         window.location.href = "/dashboard.html";
     }
 
-    function login() {
-        submitAuth("/api/auth/login", {
-            username: document.getElementById("loginEmail").value.trim(),
-            password: document.getElementById("loginPassword").value
-        }, "loginMessage");
-    }
+    async function checkSession() {
+        if (params.get("logged_out") === "1") {
+            return;
+        }
 
-    function signup() {
-        submitAuth("/api/auth/signup", {
-            name: document.getElementById("signupName").value.trim(),
-            email: document.getElementById("signupEmail").value.trim(),
-            password: document.getElementById("signupPassword").value
-        }, "signupMessage");
-    }
-
-    fetch("/api/auth/me").then(response => {
+        const response = await fetch("/api/auth/me");
         if (response.ok) {
             window.location.href = "/dashboard.html";
         }
-    });
+    }
+
+    checkSession();
 </script>
 </body>
 </html>
