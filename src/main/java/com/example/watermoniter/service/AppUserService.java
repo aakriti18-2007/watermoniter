@@ -38,13 +38,20 @@ public class AppUserService implements UserDetailsService {
                 .toList();
     }
 
+    public AppUser findById(Long id) {
+        return appUserRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+    }
+
     public AppUser findDomainUser(String username) {
         return appUserRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
     }
 
     public AppUser createUser(String username, String rawPassword, String role, String displayName) {
-        if (appUserRepository.findByUsername(username).isPresent()) {
+        validateUserInput(username, rawPassword, displayName);
+
+        if (appUserRepository.existsByUsername(username)) {
             throw new IllegalArgumentException("Username already exists");
         }
         validateRole(role);
@@ -55,6 +62,10 @@ public class AppUserService implements UserDetailsService {
                 role,
                 displayName
         ));
+    }
+
+    public AppUser signup(String name, String email, String rawPassword) {
+        return createUser(normalizeEmail(email), rawPassword, "MEMBER", requireText(name, "Name is required"));
     }
 
     public AppUser updateUser(Long id, String displayName, String role) {
@@ -104,8 +115,32 @@ public class AppUserService implements UserDetailsService {
     }
 
     private void validateRole(String role) {
-        if (!List.of("ADMIN", "OPERATOR", "VIEWER").contains(role)) {
+        if (!List.of("ADMIN", "MEMBER", "OPERATOR", "VIEWER").contains(role)) {
             throw new IllegalArgumentException("Invalid role");
         }
+    }
+
+    private void validateUserInput(String username, String rawPassword, String displayName) {
+        requireText(username, "Email is required");
+        requireText(displayName, "Name is required");
+
+        if (rawPassword == null || rawPassword.length() < 6) {
+            throw new IllegalArgumentException("Password must be at least 6 characters");
+        }
+    }
+
+    private String normalizeEmail(String email) {
+        String normalized = requireText(email, "Email is required").toLowerCase();
+        if (!normalized.contains("@") || !normalized.contains(".")) {
+            throw new IllegalArgumentException("Enter a valid email address");
+        }
+        return normalized;
+    }
+
+    private String requireText(String value, String message) {
+        if (value == null || value.trim().isEmpty()) {
+            throw new IllegalArgumentException(message);
+        }
+        return value.trim();
     }
 }

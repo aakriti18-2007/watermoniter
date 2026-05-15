@@ -56,6 +56,33 @@ public class AuthController {
         }
     }
 
+    @PostMapping("/signup")
+    public ResponseEntity<?> signup(@RequestBody Map<String, String> request, HttpServletRequest httpRequest) {
+        try {
+            AppUser created = appUserService.signup(
+                    request.get("name"),
+                    request.get("email"),
+                    request.get("password")
+            );
+
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(created.getUsername(), request.get("password"))
+            );
+
+            SecurityContext context = SecurityContextHolder.createEmptyContext();
+            context.setAuthentication(authentication);
+            SecurityContextHolder.setContext(context);
+            httpRequest.getSession(true).setAttribute(
+                    HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY,
+                    context
+            );
+
+            return ResponseEntity.status(HttpStatus.CREATED).body(buildUserResponse(created));
+        } catch (IllegalArgumentException ex) {
+            return ResponseEntity.badRequest().body(Map.of("message", ex.getMessage()));
+        }
+    }
+
     @GetMapping("/me")
     public Map<String, Object> currentUser(Authentication authentication) {
         AppUser user = appUserService.findDomainUser(authentication.getName());
@@ -73,7 +100,9 @@ public class AuthController {
 
     private Map<String, Object> buildUserResponse(AppUser user) {
         Map<String, Object> response = new LinkedHashMap<>();
+        response.put("id", user.getId());
         response.put("username", user.getUsername());
+        response.put("email", user.getUsername());
         response.put("displayName", user.getDisplayName());
         response.put("role", user.getRole());
         return response;

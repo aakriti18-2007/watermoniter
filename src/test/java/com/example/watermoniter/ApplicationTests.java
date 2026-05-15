@@ -8,6 +8,7 @@ import com.example.watermoniter.service.AiAgentService;
 import com.example.watermoniter.service.AppUserService;
 import com.example.watermoniter.service.ReportService;
 import com.example.watermoniter.service.SensorDeviceService;
+import com.example.watermoniter.service.TaskManagerService;
 import com.example.watermoniter.service.WaterService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,7 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
@@ -46,6 +48,9 @@ class ApplicationTests {
     @Autowired
     private ReportService reportService;
 
+    @Autowired
+    private TaskManagerService taskManagerService;
+
     @Test
     void contextLoads() {
         assertNotNull(waterService);
@@ -55,6 +60,7 @@ class ApplicationTests {
         assertNotNull(sensorDeviceService);
         assertNotNull(alertService);
         assertNotNull(reportService);
+        assertNotNull(taskManagerService);
     }
 
     @Test
@@ -143,5 +149,41 @@ class ApplicationTests {
         assertFalse(alertService.recentAlerts().isEmpty());
         assertTrue(reportService.exportCsv().contains("recordedAt,level,ph,temp,source,deviceName"));
         assertNotNull(reportService.summaryReport().get("registeredDevices"));
+    }
+
+    @Test
+    void shouldManageProjectsTasksAndMemberPermissions() {
+        AppUser admin = appUserService.signup("Project Admin", "project-admin@example.com", "secret123");
+        AppUser member = appUserService.signup("Project Member", "project-member@example.com", "secret123");
+
+        Map<String, Object> project = taskManagerService.createProject(admin.getUsername(), Map.of(
+                "name", "Selection Sprint",
+                "description", "Build the assignment project"
+        ));
+        Long projectId = (Long) project.get("id");
+
+        taskManagerService.addMember(admin.getUsername(), projectId, Map.of("email", member.getUsername()));
+        Map<String, Object> createdTask = taskManagerService.createTask(admin.getUsername(), projectId, Map.of(
+                "title", "Ship dashboard",
+                "description", "Complete project and task UI",
+                "dueDate", LocalDateTime.now().toLocalDate().minusDays(1).toString(),
+                "priority", "HIGH",
+                "assigneeId", member.getId().toString(),
+                "status", "TO_DO"
+        ));
+
+        Long taskId = (Long) createdTask.get("id");
+        Map<String, Object> memberDashboard = taskManagerService.dashboard(member.getUsername());
+        assertEquals(1, memberDashboard.get("totalTasks"));
+        assertEquals(1L, memberDashboard.get("overdueTasks"));
+
+        Map<String, Object> updatedTask = taskManagerService.updateTask(member.getUsername(), projectId, taskId, Map.of("status", "DONE"));
+        assertEquals("DONE", updatedTask.get("status"));
+
+        assertThrows(IllegalArgumentException.class, () -> taskManagerService.createTask(member.getUsername(), projectId, Map.of(
+                "title", "Unauthorized task",
+                "priority", "LOW",
+                "status", "TO_DO"
+        )));
     }
 }
